@@ -2,11 +2,9 @@ package com.moshenskyi.bullsheepandroid;
 
 import android.animation.ObjectAnimator;
 import android.content.Intent;
-import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomSheetBehavior;
+import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
@@ -29,12 +27,8 @@ import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 import com.moshenskyi.bullsheepandroid.pref.UserPrefManager;
 
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
+import java.util.Locale;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
     private ArFragment arFragment;
@@ -49,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private int nextAnimation;
 
     private LinearLayout llBottomSheet;
-//    private BottomSheetBehavior bottomSheetBehavior;
+    private TextToSpeech textToSpeech;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
 
         arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ar_fragment);
 
+        initTextToSpeechService();
+
         // TODO: If more than 1 item should be placed - remove this
         arFragment.setOnTapArPlaneListener((hitResult, plane, motionEvent) -> {
             if (items++ < 1) {
@@ -69,6 +65,9 @@ public class MainActivity extends AppCompatActivity {
                 placeObject(hitResult.createAnchor());
                 findSurfaceTv.setVisibility(View.GONE);
                 findViewById(R.id.statistics).setVisibility(View.VISIBLE);
+                findViewById(R.id.statistics).setOnClickListener(v ->
+                        textToSpeech.speak("Hello", TextToSpeech.QUEUE_FLUSH, null, UUID
+                                .randomUUID().toString()));
                 findViewById(R.id.info).setVisibility(View.VISIBLE);
             }
         });
@@ -88,6 +87,14 @@ public class MainActivity extends AppCompatActivity {
         initBottomSheet();
     }
 
+    private void initTextToSpeechService() {
+        textToSpeech = new TextToSpeech(getApplicationContext(), status -> {
+            if (status != TextToSpeech.ERROR) {
+                textToSpeech.setLanguage(Locale.US);
+            }
+        });
+    }
+
     private void initBottomSheet() {
         llBottomSheet = findViewById(R.id.bottom_sheet);
 
@@ -100,9 +107,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         TextView googleTv = findViewById(R.id.googleFitTv);
-        googleTv.setOnClickListener(v-> {
-            startActivity(new Intent(MainActivity.this, UserProfileActivity.class));
-        });
+        googleTv.setOnClickListener(v -> startActivity(new Intent(MainActivity.this,
+                UserProfileActivity.class)));
     }
 
     @Override
@@ -162,46 +168,6 @@ public class MainActivity extends AppCompatActivity {
         // Some bullshit for rotating the model
         node.setLocalRotation(new Quaternion(new Vector3(1f, 0, 0), 0f));
 
-        setMenu(anchorNode, node);
-    }
-
-    /**
-     * Shows menu above 3d view({@link com.google.ar.sceneform.rendering.ModelRenderable})
-     */
-    private void setMenu(AnchorNode anchorNode, TransformableNode transformableNode) {
-        // ViewRenderable is used for representing Android views as 2d objects in Sceneform
-        ViewRenderable.builder()
-                .setView(this, R.layout.some_layout)
-                .build()
-                .thenAccept(viewRenderable -> {
-                    // volumeSeekBar = viewRenderable.getView().findViewById(R.id.volume_controls);
-                    // initClickListeners();
-
-                    // Adds ability to rotate, move and resize the node.
-                    TransformableNode childNode = new TransformableNode(arFragment
-                            .getTransformationSystem());
-                    // Appears above higher than ModelRenderable by 0,8f on y-axis.
-                    childNode.setLocalPosition(new Vector3(0f, transformableNode
-                            .getLocalPosition().y + 0.8f, 0f));
-                    // Attaches this ViewRenderable to anchor node, which contains some coordinates.
-                    // So, after setting a local position for a node - we set it relatively to
-                    // this anchor node.
-                    childNode.setParent(anchorNode);
-                    // We set here a renderable for our node. It is a ready to use layout, which was
-                    // inflated is setView few lines above.
-                    childNode.setRenderable(viewRenderable);
-
-                    Observable.timer(3, TimeUnit.SECONDS)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(result -> transformableNode.removeChild(transformableNode),
-                                    error -> {
-                                    },
-                                    () -> {
-                                        childNode.setParent(null);
-                                        showTasks(anchorNode, transformableNode);
-                                    });
-                });
     }
 
     private void showTasks(AnchorNode anchorNode, TransformableNode transformableNode) {
@@ -235,8 +201,8 @@ public class MainActivity extends AppCompatActivity {
 
                     });
                 }).exceptionally(throwable -> {
-                    Toast.makeText(MainActivity.this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                    return null;
-                });
+            Toast.makeText(MainActivity.this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
+            return null;
+        });
     }
 }
