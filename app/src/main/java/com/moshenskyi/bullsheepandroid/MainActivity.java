@@ -1,6 +1,7 @@
 package com.moshenskyi.bullsheepandroid;
 
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,6 +30,11 @@ import com.moshenskyi.bullsheepandroid.pref.UserPrefManager;
 
 import java.util.Locale;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
     private ArFragment arFragment;
@@ -167,7 +173,21 @@ public class MainActivity extends AppCompatActivity {
         node.setRenderable(renderable);
         // Some bullshit for rotating the model
         node.setLocalRotation(new Quaternion(new Vector3(1f, 0, 0), 0f));
+        setMenu(anchorNode, node);
+    }
 
+    /**
+     * Shows menu above 3d view({@link com.google.ar.sceneform.rendering.ModelRenderable})
+     */
+    @SuppressLint("CheckResult")
+    private void setMenu(AnchorNode anchorNode, TransformableNode transformableNode) {
+        Observable.timer(3, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> transformableNode.removeChild(transformableNode),
+                        error -> {
+                        },
+                        () -> showTasks(anchorNode, transformableNode));
     }
 
     private void showTasks(AnchorNode anchorNode, TransformableNode transformableNode) {
