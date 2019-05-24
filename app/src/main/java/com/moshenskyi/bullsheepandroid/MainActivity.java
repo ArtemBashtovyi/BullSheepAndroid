@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.statistics).setOnClickListener(v ->
                         textToSpeech.speak("Hello", TextToSpeech.QUEUE_FLUSH, null, UUID
                                 .randomUUID().toString()));
-                findViewById(R.id.info).setVisibility(View.VISIBLE);
+//                findViewById(R.id.info).setVisibility(View.VISIBLE);
             }
         });
 
