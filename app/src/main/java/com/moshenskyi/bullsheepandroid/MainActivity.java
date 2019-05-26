@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
     private ModelAnimator animator;
     private int nextAnimation;
 
-    private LinearLayout llBottomSheet;
     private TextToSpeech textToSpeech;
 
     @Override
@@ -84,13 +83,11 @@ public class MainActivity extends AppCompatActivity {
                 arFragment.getPlaneDiscoveryController().hide();
                 findSurfaceTv.setText("Tap to place");
             }
-//            setPlaneTexture("frame.png");
         });
 
         TextView moodPoints = findViewById(R.id.statisticMoodPointTv);
         moodPoints.setText(String.valueOf(UserPrefManager.getInstance().getMoodPoint()));
 
-        initBottomSheet();
     }
 
     private void initTextToSpeechService() {
@@ -101,21 +98,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void initBottomSheet() {
-        llBottomSheet = findViewById(R.id.bottom_sheet);
-
-        llBottomSheet.setVisibility(View.GONE);
-
-        TextView audioTv = findViewById(R.id.audioTv);
-        audioTv.setOnClickListener(v -> {
-            items = 0;
-            startActivity(new Intent(MainActivity.this, AudioListActivity.class));
-        });
-
-        TextView googleTv = findViewById(R.id.googleFitTv);
-        googleTv.setOnClickListener(v -> startActivity(new Intent(MainActivity.this,
-                UserProfileActivity.class)));
-    }
 
     @Override
     protected void onResume() {
@@ -136,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
                 .build()
                 .thenAccept(modelRenderable -> {
                     MainActivity.this.modelRenderable = modelRenderable;
-
                     placeNodes(anchor, modelRenderable);
                     onPlayAnimation(null);
                 });
@@ -200,26 +181,6 @@ public class MainActivity extends AppCompatActivity {
                 .build()
                 .thenAccept(modelRenderable -> {
                     childNode.setRenderable(modelRenderable);
-                    ImageView reportView = modelRenderable.getView().findViewById(R.id.report_view);
-                    reportView.setOnClickListener(v -> {
-                        if (llBottomSheet.getVisibility() == View.GONE) {
-                            initBottomSheet();
-                            llBottomSheet.setVisibility(View.VISIBLE);
-                            ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(llBottomSheet,
-                                    "alpha", 0, 1);
-                            objectAnimator.setDuration(1200);
-                            objectAnimator.setInterpolator(new DecelerateInterpolator());
-                            objectAnimator.start();
-                        } else {
-                            ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(llBottomSheet,
-                                    "alpha", 1, 0);
-                            objectAnimator.setDuration(1200);
-                            objectAnimator.setInterpolator(new DecelerateInterpolator());
-                            objectAnimator.start();
-                            llBottomSheet.setVisibility(View.GONE);
-                        }
-
-                    });
                 }).exceptionally(throwable -> {
             Toast.makeText(MainActivity.this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
             return null;

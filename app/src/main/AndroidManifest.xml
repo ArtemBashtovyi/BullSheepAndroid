@@ -21,19 +21,12 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait"
-            android:name=".AudioListActivity" />
-        <activity
             android:screenOrientation="portrait"
             android:name=".MainActivity" />
 
         <meta-data
             android:name="com.google.ar.core"
             android:value="optional" />
-
-        <activity android:name=".UserProfileActivity"
-            android:screenOrientation="portrait"/>
 
         <activity
             android:screenOrientation="portrait"
@@ -46,9 +39,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:screenOrientation="portrait"
-            android:name=".AudioActivity"/>
     </application>
 
 </manifest>
