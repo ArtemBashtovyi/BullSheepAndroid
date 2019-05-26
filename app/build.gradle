@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.ar.sceneform.plugin'
 
 android {
     compileSdkVersion 28
@@ -35,6 +36,8 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
     implementation 'io.reactivex.rxjava2:rxjava:2.2.8'
 
+    implementation 'com.github.bumptech.glide:glide:4.9.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     // OkHttp
     implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
     implementation 'com.squareup.okhttp3:okhttp:3.12.0'
@@ -44,4 +47,29 @@ dependencies {
 
     // Provides ArFragment, and other UX resources.
     implementation 'com.google.ar.sceneform.ux:sceneform-ux:1.8.0'
+
+    // Support for animated model renderables
+    implementation "com.google.ar.sceneform:animation:1.8.0"
 }
+
+
+sceneform.asset('sampledata/models/andy_dance.fbx',
+        'default',
+        'sampledata/models/andy_dance.sfa',
+        'src/main/assets/andy_dance')
+
+sceneform.asset('sampledata/models/andy_wave_l.fbx',
+        'default',
+        'sampledata/models/andy_wave_l.sfa',
+        'src/main/assets/andy_wave_l')
+
+sceneform.asset('sampledata/models/andy_wave_r.fbx',
+        'default',
+        'sampledata/models/andy_wave_r.sfa',
+        'src/main/assets/andy_wave_r')
+
+
+sceneform.asset('sampledata/models/gramophone.obj',
+        'default',
+        'sampledata/models/gramophone.sfa',
+        'src/main/assets/gramophone')

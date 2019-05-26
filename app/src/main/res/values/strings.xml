@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">BullSheepAndroid</string>
     <string name="title_activity_pet_name">PetNameActivity</string>
+    <string name="volume">Volume:</string>
 </resources>
